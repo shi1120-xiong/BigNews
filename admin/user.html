@@ -16,7 +16,7 @@
 
 <body>
     <div class="container-fluid">
-        <div class="common_title">
+        <div class="common  _title">
             用户信息修改
         </div>
         <div class="container-fluid common_con">
@@ -48,7 +48,7 @@
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
                         <label for="exampleInputFile">
-                            <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="">
+                            <img src="./images/2.jpg" style="height: 50px;" alt="">
                         </label>
                     </div>
                 </div>
@@ -68,6 +68,65 @@
             </form>
         </div>
     </div>
+    <script src="./libs/http.js"></script>
+    <script>
+        // 入口函数: 等待dom树加载完毕再执行这里的js代码 不然容易出bug
+        $(function () {
+            //  1 页面一加载 请求ajax信息
+            $.ajax({
+                url: BigNew.user_detail,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    console.log(backData);
+                    // $('.username').val(backData.data.username);
+                    // $('.email').val(backData.data.email);
+                    // $('.nickname').val(backData.data.nickname);
+                    // $('.password').val(backData.data.password);
+                     $('.user_pic').attr('src',backData.data.userPic);
+                     //遍历对象解决代码冗余问题
+                    for(var key in backData.data) {
+                        //console.log(key);
+                        $('.'+key).val(backData.data[key])
+                        console.log(backData.data[key]);
+                        
+                    }
+                }
+            })
+            // 2 文件预览
+            // 给file表单注册onchange事件
+            $('#exampleInputFile').change(function() {
+                // 获取用户选择的图片
+                var file=this.files[0];
+                // 将文件转为src路径
+                var url=URL.createObjectURL(file);
+                // 将src路径赋值给img标签的src
+                $('.user_pic').attr('src',url)
+            })
+            // 3 文件上传
+            $('.btn-edit').click(function(e) {
+                // 禁用表单默认提交事件
+                e.preventDefault();
+                // 创建formData对象 参数是表单dom对象
+                var fd=new FormData($('#form')[0])
+                $.ajax({
+                    url:BigNew.user_edit,
+                    type:'post',
+                    dataType:'json',
+                    data:fd,
+                    contentType:false,
+                    processData:false,
+                    success:function(backData) {
+                        if(backData.code==200) {
+                            alert('修改成功');
+                            // 刷新页面
+                            window.parent.location.reload();
+                        }
+                    }
+                })
+            })
+        })
+    </script>
 </body>
 
 </html>
