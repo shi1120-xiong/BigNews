@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../admin/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../admin/libs/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" href="../admin/libs/bootstrap/css/bootstrap.min.css">
+    <!-- 1.导包 -->
+    <script src="../admin/libs/jquery.twbsPagination.js"></script>
+</head>
+
+<body>
+    <!-- 2.写HTML代码 -->
+    <ul id="pagination-demo" class="pagination-sm"></ul>
+    <button id="btn">点我有变化</button>
+    <script>
+        $(function () {
+            $('#pagination-demo').twbsPagination({
+                totalPages: 35,//总页数
+                visiblePages: 7,//每一页显示的条数
+                startPage: 3,//刚进来显示的页面
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '尾页',
+                onPageClick: function (event, page) {
+                    console.log(page);
+                    $('#page-content').text('Page ' + page);// page表示当前显示页数
+
+                }
+            });
+            // 按钮的点击事件
+            $('#btn').click(function () {
+                //设置随机整数
+                var totel = Math.ceil(Math.random() * 100);
+                // 点击刷新按钮 动态刷新总页数
+                // 1. 先销毁旧插件
+                $('#pagination-demo').twbsPagination("destroy")
+                $('#pagination-demo').twbsPagination({
+                    totalPages: totel,//总页数  这里的值就是上面生成的随机整数
+                    visiblePages: 7,//每一页显示的条数
+                    startPage: 1,//刚进来显示的页面
+                    first: '首页',
+                    prev: '上一页',
+                    next: '下一页',
+                    last: '尾页',
+                    onPageClick: function (event, page) {
+                        console.log(page);
+                        $('#page-content').text('Page ' + page);// page表示当前显示页数
+                    }
+                });
+            })
+        })
+    </script>
+</body>
+
+</html>
