@@ -87,7 +87,7 @@
                 dataType: 'json',
                 type: 'get',
                 success: function (backData) {
-                    console.log(backData);
+                    //console.log(backData);
                     // 响应之后渲染页面
                     $('.user_info>img').attr('src', backData.data.userPic);
                     $('.user_info>span').text(backData.data.nickname);

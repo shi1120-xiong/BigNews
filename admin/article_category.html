@@ -35,7 +35,8 @@
                         <td>奇趣事</td>
                         <td>funny</td>
                         <td class="text-center">
-                            <a href="javascript:void(0);" data-toggle="modal" data-target="#myModal" class=" btn btn-info btn-xs">编辑</a>
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#myModal"
+                                class=" btn btn-info btn-xs">编辑</a>
                             <a href="javascript:void(0);" class="btn btn-danger btn-xs">删除</a>
                         </td>
                     </tr>
@@ -55,30 +56,31 @@
     <!-- 模态框 -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="exampleModalLabel">文章分类管理</h4>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="form-group">
-                  <label for="recipient-name" class="control-label">分类名称:</label>
-                  <input type="text" class="form-control" id="recipient-name">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">文章分类管理</h4>
                 </div>
-                <div class="form-group">
-                  <label for="message-text" class="control-label">分别别名:</label>
-                  <textarea class="form-control" id="message-text"></textarea>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分别别名:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
                 </div>
-              </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-cancel" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary btn-queren">确认</button>
+                </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-              <button type="button" class="btn btn-primary">确认</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
     <script id="cat_list" type="text/html">
         {{each data v}}
         <tr>
@@ -86,7 +88,7 @@
             <td>{{v.slug}}</td>
             <td class="text-center">
                 <a href="javascript:void(0);" data-id="{{v.id}}" class=" btn btn-info btn-xs" data-toggle="modal" data-target="#myModal">编辑</a>
-                <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -97,21 +99,110 @@
         $(function () {
             // 1 查询所有分类
             $.ajax({
-                url:BigNew.category_list,
+                url: BigNew.category_list,
                 dataType: 'json',
                 type: 'get',
                 success: function (backData) {
-                    console.log(backData);
+                    //console.log(backData);
                     // 模板引擎渲染页面
-                    $('tbody').html(template('cat_list',backData))
+                    $('tbody').html(template('cat_list', backData))
                 }
             })
-            // 2 新增分类
-            // $('#xinzengfenlei').click(function() {
-            // })
-            // 3 编辑分类
+            // 2 新增分类  给模态框弹出注册点击事件
+            $('#myModal').on('show.bs.modal', function (e) {
+                // do something...
+                //console.log(e.relatedTarget)
+                if($(e.relatedTarget).text() == '新增分类') {
+                    alert('你点击的是新增')
+                    $('.btn-queren').text('新增')
+                    
+                }else{
+                    //console.log(e.relatedTarget);
+                    
+                    alert('你点的是编辑')
+                    $('.btn-queren').text('编辑');
+                    // 页面传值 显示当前编辑的分类信息
+                    $('#recipient-name').val($(e.relatedTarget).parent().prev().prev().text());
+                    $('#message-text').val($(e.relatedTarget).parent().prev().prev().text());
+                    // 将点击的编辑按钮的data-id值赋值给模态框的确认按钮
+                    $('.btn-queren').attr('data-id',$(e.relatedTarget).attr('data-id'));
+                }
+            })
 
+            // 给模态框消失注册点击事件 清空表单
+            $('.btn-cancel').click(function() {
+                //console.log(111);
+                
+                console.log($('.modal-body>form'));
+                
+                $('.modal-body>form')[0].reset()
+               // console.log($('.modal-body>form')[0].reset());
+            })
+            // 给模态框确认按钮注册点击事件 新增 发送ajax请求 编辑 发送编辑ajax请求
+            $('.btn-queren').click(function() {
+                if($(this).text() == '新增') {
+                    //发送新增sjax
+                    $.ajax({
+                        url:BigNew.category_add,
+                        type:'post',
+                        dataType:'json',
+                        data:{
+                            name:$('#recipient-name').val(),
+                            slug:$('#message-text').val()
+                        },
+                        success: function(backData) {
+                            //console.log(backData);
+                            if(backData.code == 201) {
+                                alert(backData.msg)
+                                window.location.reload();
+                            }
+                        }
+                    })
+                }else {
+                    //发送编辑sjax
+                    alert('编辑成功')
+                    $.ajax({
+                        url:BigNew.category_edit,
+                        type:'post',
+                        dataType:'json',
+                        data:{
+                            name:$('#recipient-name').val(),
+                            slug:$('#message-text').val(),
+                            id:$(this).attr('data-id')
+                        },
+                        success: function(backData) {
+                            console.log(backData);
+                            if(backData.code == 200) {
+                                alert(backData.msg)
+                                // 刷新页面 reload 刷新
+                                window.location.reload();
+                            }
+                        }
+                    })
+                }
+                
+            })
             // 4 删除分类
+            // 注意点 删除按钮是ajax动态添加的,需要注册委托时间  原理 事件冒泡
+            $('.table>tbody').on('click','.btn-delete',function() {
+                // 获取当前点击按钮的data-id
+                var id=$(this).attr('data-id');
+                // 删除分类
+                $.ajax({
+                    url:BigNew.category_delete,
+                    dataType:'json',
+                    type:'post',
+                    data:{
+                        id:id
+                    },
+                    success:function(backData) {
+                        if(backData.code == 204) {
+                            alert(backData.msg);
+                            window.location.reload();
+                        }
+                    }
+                })
+            })
         })
     </script>
 </body>
