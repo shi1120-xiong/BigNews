@@ -39,7 +39,7 @@
                 var totel = Math.ceil(Math.random() * 100);
                 // 点击刷新按钮 动态刷新总页数
                 // 1. 先销毁旧插件
-                $('#pagination-demo').twbsPagination("destroy")
+                $pagination.twbsPagination('destroy');
                 $('#pagination-demo').twbsPagination({
                     totalPages: totel,//总页数  这里的值就是上面生成的随机整数
                     visiblePages: 7,//每一页显示的条数

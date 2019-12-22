@@ -79,9 +79,9 @@
     <!-- 文章分类 -->
 
     <script id="cat_list" type="text/html">
-        <option>所有分类</option>
+        <option value=''>所有分类</option>
         {{each data v}}
-        <option value="{{v.id}}">{{v.name}}</option>
+        <option value={{v.id}}>{{v.name}}</option>
         {{/each}}
     </script>
 
@@ -92,14 +92,13 @@
             <td>{{v.title}}</td>
             <td>{{v.author}}</td>
             <td>{{v.category}}</td>
-            <td class="text-center">{{v.data}}</td>
+            <td class="text-center" >{{v.data}}</td>
             <td class="text-center">{{v.state}}</td>
             <td class="text-center">
                 <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
                 <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs delete">删除</a>
             </td>
         </tr>
-
         {{/each}}
     </script>
     <script src="../admin/libs/http.js"></script>
@@ -114,74 +113,71 @@
                 success: function (backData) {
                     console.log(backData);
                     // 模板引擎渲染页面
-                    $('#selCategory').html(template('cat_list', backData))
+                    $('#selCategory').html(template('cat_list', backData));
+
                 }
             })
-            // 2 筛选按钮 查询文章列表
-            // form是在表单中 需要阻止默认跳转
+            // // 2 筛选按钮 查询文章列表
             $('#btnSearch').click(function (e) {
-                // 阻止表单默认跳转
+                // form是在表单中 需要阻止默认跳转
                 e.preventDefault();
                 $.ajax({
                     url: BigNew.article_query,
-                    dataType: 'json',
                     type: 'get',
+                    dataType: 'json',
                     data: {
                         type: $('#selCategory').val(),
                         state: $('#selStatus').val(),
-                        page: 1,
-                        perpage: 10
+                        perpage: 10,
+                        page: 1
                     },
                     success: function (backData) {
                         console.log(backData);
-                        // 模板引擎渲染页面
-                        $('.table>tbody').html(template('art_list', backData));
-                        // 数据相应之后 加载分页插件
-                        // (1) 先销毁旧的插件
-                        $('#pagination-demo').twbsPagination("destroy")
+                        
+                        // 获取到的文章渲染页面
+                        $('tbody').html(template('art_list', backData));
+                        // 加载分页插件
+                        // 1. 先销毁旧插件
+                        $('#pagination-demo').twbsPagination('destroy');
+                        // 2. 执行分页插件js代码
                         $('#pagination-demo').twbsPagination({
                             totalPages: backData.data.totalPage,//总页数
-                            visiblePages: 8,//可见页数
+                            visiblePages: 10,//每一页显示的条数
                             startPage: 1,//刚进来显示的页面
                             first: '首页',
                             prev: '上一页',
                             next: '下一页',
                             last: '尾页',
                             onPageClick: function (event, page) {
-                                console.log(page);
                                 $('#page-content').text('Page ' + page);// page表示当前显示页数
-                                // 加载分页数据
-                                getArticleList(page);
+                                getAtt(page)
                             }
                         });
                     }
                 })
             })
-            // 主动触发筛选按钮点击事件
+            // // 主动触发筛选按钮点击事件
             $('#btnSearch').click();
-
-            // 封装一个函数 分页点击的时候显示相应的数据
+            //     // 封装一个函数 分页点击的时候显示相应的数据
             // description: 加载分页数据
-            // param: {type} currentPage : 当前页数
-            function getArticleList(currentPage) {
+            //param: {type} currentPage : 当前点击的页数
+            // 3 分页查询
+            function getAtt(currentPage) {
                 $.ajax({
                     url: BigNew.article_query,
-                    dataType: 'json',
                     type: 'get',
+                    dataType: 'json',
                     data: {
                         type: $('#selCategory').val(),
                         state: $('#selStatus').val(),
-                        page: currentPage,
-                        perpage: 10
+                        perpage: 10,
+                        page: currentPage
                     },
-                    success:function(backData) {
-                        // 模板引擎渲染页面
-                        $('.table>tbody').html(template('art_list', backData));
+                    success: function (backData) {
+                        $('tbody').html(template('art_list', backData));
                     }
-                });
+                })
             }
-            // 3 分页查询
-
             // 4 删除按钮
         })
     </script>
