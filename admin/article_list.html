@@ -96,7 +96,7 @@
             <td class="text-center">{{v.state}}</td>
             <td class="text-center">
                 <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
-                <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs delete">删除</a>
+                <a href="javascript:void(0);" data-id={{v.id}} class="btn btn-danger btn-xs delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -133,7 +133,6 @@
                     },
                     success: function (backData) {
                         console.log(backData);
-                        
                         // 获取到的文章渲染页面
                         $('tbody').html(template('art_list', backData));
                         // 加载分页插件
@@ -175,10 +174,39 @@
                     },
                     success: function (backData) {
                         $('tbody').html(template('art_list', backData));
+                        // 加载分页插件
+
                     }
                 })
             }
+
             // 4 删除按钮
+            // 删除按钮是ajax动态添加的 所以需要添加委托注册事件
+            $('.table>tbody').on('click','.delete',function() {
+                // 获取当前点击按钮的data-id
+                var id=$(this).attr('data-id');
+                // 发送ajax请求
+                $.ajax({
+                    url:BigNew.article_delete,
+                    type:'post',
+                    dataType:'json',
+                    data:{
+                        id:id
+                    },
+                    success:function(backData) {
+                        console.log(backData);
+                        if(backData.code == 204) {
+                            alert(backData.msg);
+                            // 刷新页面
+                            window.location.reload();
+                        }
+                    }
+                })
+            })
+             // 5  fa bu wen zhang 
+             $('.pull-right').click(function() {
+                $('.level02>li:eq(1)',window.parent.document).addClass('active').siblings().removeClass('active');
+            });
         })
     </script>
 </body>
